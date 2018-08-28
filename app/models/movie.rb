@@ -21,6 +21,4 @@ class Movie < ActiveRecord::Base
   	  nil   
    end
 
-   setup
-  end
 end
