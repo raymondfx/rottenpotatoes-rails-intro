@@ -18,6 +18,13 @@ class MoviesController < ApplicationController
     @checked_ratings.each do |rating|
       params[rating] = true
     end
+
+        if params[:sort]
+      @movies = Movie.order(params[:sort])
+    else
+      @movies = Movie.where(:rating => @checked_ratings)
+    end
+  
     #Comment for part 1 complete
     if params[:title] == "sort"
       @movies = Movie.all.order(:title => "ASC")
