@@ -14,7 +14,13 @@ class Movie < ActiveRecord::Base
   	setup = {}
 
   	setup[:ratings] = if params[:ratings]
+
+  	 if params[:ratings].kind_of? Hash	
+  		params[:ratings].keys
+  	else
   		params[:ratings]
+  	end
+  	
   	elsif session[:ratings]
        session[:ratings]
   	else
@@ -27,7 +33,7 @@ class Movie < ActiveRecord::Base
        session[:order_by]
   	else
   	  nil   
-   end
+    end
 
    setup
   end
