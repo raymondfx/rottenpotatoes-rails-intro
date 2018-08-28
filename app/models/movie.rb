@@ -20,21 +20,22 @@ class Movie < ActiveRecord::Base
   	else
   		params[:ratings]
   	end
-  	
-  	elsif session[:ratings]
-       session[:ratings]
-  	else
-  	  self.ratings     
-   end
 
-   setup[:order_by] = if params[:order_by]
-  		params[:order_by]
-  	elsif session[:order_by]
-       session[:order_by]
-  	else
+  elsif session[:ratings]
+       session[:ratings]
+  else
+  	  self.ratings     
+  end
+
+  setup[:order_by] = if params[:order_by]
+  	params[:order_by]
+  elsif session[:order_by]
+     session[:order_by]
+  else
   	  nil   
-    end
+  end
 
    setup
-  end
+ end
+ 
 end
