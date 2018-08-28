@@ -17,7 +17,6 @@ class MoviesController < ApplicationController
     session[:ratings] = setup[:ratings]
     session[:order_by] = setup[:order_by]
 
-    end
 
     if params[:sort]
       @movies = Movie.order(params[:sort])
