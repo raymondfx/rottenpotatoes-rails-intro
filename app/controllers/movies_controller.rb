@@ -12,6 +12,7 @@ class MoviesController < ApplicationController
     @checked_ratings.each do |rating|
       params[rating] = true
     if(params[:ratings])
+
       session[:ratings] = params[:ratings]
       @ratings = params[:ratings].keys
     elsif(session[:ratings])
@@ -24,7 +25,7 @@ class MoviesController < ApplicationController
     if (params[:sort])
       @sort_by = params[:sort_by]
       session[:sort_by] = @sort_by
-      @movies = Movie.order(params[:sort])
+      @movies = Movie.order(params[:sort_by])
       !(rating.nil?) ? @movies = @movies.find_all_by_rating(@ratings): @movies
     elsif(session[:sort_by])
       @sort_by = session[:sort_by]
