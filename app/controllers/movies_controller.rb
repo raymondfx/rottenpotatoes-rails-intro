@@ -7,30 +7,25 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @all_ratings = Movie.order(:rating).select(:rating).map(&:rating).unique
-    @check_ratings = check
-    @checked_rating.each do |rating|
+    @all_ratings = Movie.order(:rating).select(:rating).map(&:rating).uniq
+    @checked_ratings = check
+    @checked_ratings.each do |rating|
       params[rating] = true
     end
 
-    if params[:title] == "sort"
-      @movies = Movie.all.order(:title => "ASC")
-      @title_header_class= "hilite"
-    elsif params[:release_date] == "sort"
-      @movies = Movie.all.order(:release_date => "DESC")
-      @release_date_class="hilite"
-
+    if params[:sort]
+      @movies = Movie.order(params[:sort])
     else
-    @movies = Movie.where(:rating => @checked_ratings)
+      @movies = Movie.where(:rating => @checked_ratings)
+    end
   end
-end
 
   def new
     # default: render 'new' template
   end
 
   def create
-    @movie = Movie.create!(movie_params)
+    @movie = Movie.create!(params[:movie])
     flash[:notice] = "#{@movie.title} was successfully created."
     redirect_to movies_path
   end
@@ -41,7 +36,7 @@ end
 
   def update
     @movie = Movie.find params[:id]
-    @movie.update_attributes!(movie_params)
+    @movie.update_attributes!(params[:movie])
     flash[:notice] = "#{@movie.title} was successfully updated."
     redirect_to movie_path(@movie)
   end
@@ -53,7 +48,7 @@ end
     redirect_to movies_path
   end
 
-   private
+  private
 
   def check
     if params[:ratings]
