@@ -7,17 +7,28 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @all_ratings = Movie.order(:rating).select(:rating).map(&:rating).uniq
-    @checked_ratings = check
-    @checked_ratings.each do |rating|
-      params[rating] = true
+    if(!params.has_key?(:sort) && !params.has_key?(:ratings))
+      if(session.has_key?(:sort) || session.has_key?(:ratings))
+        redirect_to movies_path(:sort=>session[:sort], :ratings=>session[:ratings])
+      end
     end
-
-    if params[:sort]
-      @movies = Movie.order(params[:sort])
+    @sort = params.has_key?(:sort) ? (session[:sort] = params[:sort]) : session[:sort]
+    @all_ratings = Movie.all_ratings.keys
+    @ratings = params[:ratings]
+    if(@ratings != nil)
+      ratings = @ratings.keys
+      session[:ratings] = @ratings
     else
-      @movies = Movie.where(:rating => @checked_ratings)
+      if(!params.has_key?(:commit) && !params.has_key?(:sort))
+        ratings = Movie.all_ratings.keys
+        session[:ratings] = Movie.all_ratings
+      else
+        ratings = session[:ratings].keys
+      end
     end
+    @movies = Movie.order(@sort).find_all_by_rating(ratings)
+    @mark  = ratings
+
   end
 
   def new
@@ -48,14 +59,19 @@ class MoviesController < ApplicationController
     redirect_to movies_path
   end
 
-  private
-
-  def check
-    if params[:ratings]
-      params[:ratings].keys
-    else
-      @all_ratings
+  def similar_movie
+    id = params[:id]
+    @movie = Movie.find_by_id(id)
+    if (@movie.director.length == 0)
+      flash[:notice] = "'#{@movie.title}' has no director info."
+      redirect_to movies_path
     end
+    @movies = Movie.find_all_by_director(@movie.director)
   end
+  
+  def find_class(header)
+    params[:sort] == header ? 'hilite' : nil
+  end
+  helper_method :find_class
 
 end
