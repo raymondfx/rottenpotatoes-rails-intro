@@ -11,10 +11,24 @@ class MoviesController < ApplicationController
     @checked_ratings = check
     @checked_ratings.each do |rating|
       params[rating] = true
+    if(params[:ratings])
+      session[:ratings] = params[:ratings]
+      @ratings = params[:ratings].keys
+    elsif(session[:ratings])
+      if(session[:sort_by].nil?)
+          redirect_to movies_path({:ratings => session [:ratings]})
+        end
+      
     end
 
-    if params[:sort]
+    if (params[:sort])
+      @sort_by = params[:sort_by]
+      session[:sort_by] = @sort_by
       @movies = Movie.order(params[:sort])
+      !(rating.nil?) ? @movies = @movies.find_all_by_rating(@ratings): @movies
+    elsif(session[:sort_by])
+      @sort_by = session[:sort_by]
+      redirect_to movies_path({:sort_by => @sort_by, :ratings => session[:ratings] })
     else
       @movies = Movie.where(:rating => @checked_ratings)
     end
